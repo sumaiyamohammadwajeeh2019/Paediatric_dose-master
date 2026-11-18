@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f766e">
+<title>Paedi Dose Master</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{--p:#0f766e;--bg:#f0fdfa;--card:#fff}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui;background:var(--bg);color:#0f172a}
+.header{background:var(--p);color:#fff;padding:12px 14px;position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center}
+.tabs{display:flex;gap:6px;overflow:auto;padding:10px;background:#fff;border-bottom:1px solid #e2e8f0;position:sticky;top:56px;z-index:15}
+.tab{white-space:nowrap;padding:7px 11px;border-radius:20px;border:1px solid #cbd5e1;background:#f8fafc;font-size:11px;font-weight:700;cursor:pointer}
+.tab.active{background:var(--p);color:#fff}
+.container{max-width:900px;margin:auto;padding:10px}
+.card{background:var(--card);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.06);border:1px solid #e2e8f0}
+.card h3{margin:0 0 8px;font-size:14px;color:var(--p)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+label{font-size:11px;font-weight:700;color:#334155;display:block;margin-bottom:3px}
+input,select,textarea{width:100%;padding:7px 8px;border-radius:8px;border:1.5px solid #cbd5e1;font-size:12px}
+.btn{width:100%;padding:11px;background:var(--p);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:13px;margin-top:8px;cursor:pointer}
+.btn2{padding:8px 12px;border-radius:8px;border:none;font-weight:700;font-size:11px;cursor:pointer}
+.result{margin-top:8px;padding:10px 11px;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:10px;font-size:13px;line-height:1.5}
+.small{font-size:10px;color:#64748b;margin-top:5px}
+table{width:100%;border-collapse:collapse;font-size:11px}th,td{border:1px solid #cbd5e1;padding:5px;text-align:center}th{background:#f0fdfa;font-size:10px}
+.logo{width:36px;height:36px;background:#fff;color:var(--p);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px}
+.drugCard{padding:10px;border:1px solid #cbd5e1;border-radius:10px;margin-bottom:8px;background:#fff}
+.drugCard b{color:#0f766e}
+.badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:800;color:#fff;margin-right:4px}
+.patCard{padding:10px;border:1px solid #cbd5e1;border-radius:10px;margin-bottom:8px;background:#f8fafc}
+.sysTab{cursor:pointer;border:2px solid transparent}
+.sysTab.active{border:2px solid #0f172a;opacity:1 !important}
+.sysWrap{display:flex;gap:5px;overflow:auto;white-space:nowrap;padding:6px 0 2px}
+.sysWrap::-webkit-scrollbar{display:none}
+@media print{.tabs,.btn,#langBtn,#printBtn,.noPrint{display:none !important}.sec{display:block !important}.container{max-width:100%}body{background:#fff}.result{border:1px solid #000}}
+</style>
+</head>
+<body>
+<div class="header"><div style="display:flex;align-items:center;gap:10px"><div class="logo">👶</div><div><div style="font-weight:900;font-size:14px">Paedi Dose Master</div><div style="font-size:10px" id="headerSub">Physiologist, Bangladesh • শিশু ডোজ মাস্টার</div></div></div><button id="langBtn" onclick="toggleLang()" style="padding:6px 10px;border-radius:20px;border:none;font-weight:800">EN</button><button id="printBtn" onclick="window.print()" style="padding:6px 10px;border-radius:20px;border:none;font-weight:800;margin-left:6px">🖨 Print</button></div>
+<div class="tabs">
+<div class="tab active" data-t="age" data-bn="বয়স" data-en="Age">বয়স</div><div class="tab" data-t="patient" data-bn="👶 Patient" data-en="👶 Patient">👶 Patient</div><div class="tab" data-t="neonate" data-bn="নবজাতক" data-en="Neonate">নবজাতক</div><div class="tab" data-t="growth" data-bn="গ্রোথ" data-en="Growth">গ্রোথ</div><div class="tab" data-t="expected" data-bn="Expected" data-en="Expected">Expected</div><div class="tab" data-t="bsa" data-bn="BSA" data-en="BSA">BSA</div><div class="tab" data-t="emerg" data-bn="Emergency" data-en="Emergency">Emergency</div><div class="tab" data-t="dehy" data-bn="Dehydration" data-en="Dehydration">Dehydration</div><div class="tab" data-t="burn" data-bn="Burn" data-en="Burn">Burn</div><div class="tab" data-t="dose" data-bn="ডোজ" data-en="Dose">ডোজ</div><div class="tab" data-t="drugs" data-bn="ওষুধ" data-en="Medicine">ওষুধ</div>
+</div>
+<div class="container">
+
+<!-- AGE -->
+<div id="age" class="card sec"><h3 data-bn="বয়স ক্যালকুলেটর" data-en="Age Calculator">বয়স ক্যালকুলেটর</h3><div class="row"><div><label data-bn="জন্ম তারিখ" data-en="Date of Birth">জন্ম তারিখ</label><input type="date" id="dob"></div><div><label data-bn="আজকের তারিখ" data-en="Today's Date">আজকের তারিখ</label><input type="date" id="today"></div></div><button class="btn" onclick="calcAge()" data-bn="হিসাব করুন" data-en="Calculate">হিসাব করুন</button><div id="ageRes" class="result" style="display:none"></div>
+<div style="margin-top:10px"><button class="btn2" style="background:#0f766e;color:#fff" onclick="useAgeForPatient()" data-bn="➕ Use This Age For Patient" data-en="➕ Use This Age For Patient">➕ Use This Age For Patient</button></div></div>
+
+<!-- PATIENT -->
+<div id="patient" class="card sec" style="display:none">
+<h3 data-bn="👶 Patient Save / History - Local Save (No Internet Needed)" data-en="👶 Patient Save / History - Local Save (No Internet Needed)">👶 Patient Save / History - Local Save (No Internet Needed)</h3>
+<p class="small" data-bn="Save patient + calculation result. Data stays in this phone / browser only. Print prescription." data-en="Save patient + calculation result. Data stays in this phone / browser only. Print prescription.">Save patient + calculation result. Data stays in this phone / browser only. Print prescription.</p>
+<div class="row"><div><label data-bn="Patient Name *" data-en="Patient Name *">Patient Name *</label><input id="pName" placeholder="e.g. Ayesha"></div><div><label data-bn="Age" data-en="Age">Age</label><input id="pAge" placeholder="e.g. 3y 2m"></div></div>
+<div class="row" style="margin-top:6px"><div><label data-bn="Weight kg *" data-en="Weight kg *">Weight kg *</label><input type="number" id="pWt" step="0.1" placeholder="14"></div><div><label data-bn="Sex" data-en="Sex">Sex</label><select id="pSex"><option>Boy</option><option>Girl</option></select></div></div>
+<div class="row" style="margin-top:6px"><div><label data-bn="Diagnosis / Problem" data-en="Diagnosis / Problem">Diagnosis / Problem</label><input id="pDx" placeholder="e.g. Fever, Pneumonia"></div><div><label data-bn="Medicine / Dose Given" data-en="Medicine / Dose Given">Medicine / Dose Given</label><input id="pMed" placeholder="e.g. Paracetamol 200mg TDS"></div></div>
+<div style="margin-top:6px"><label data-bn="Notes / Suggestion (auto from calculator will come here)" data-en="Notes / Suggestion (auto from calculator will come here)">Notes / Suggestion (auto from calculator will come here)</label><textarea id="pNote" rows="2" placeholder="e.g. ORS + Zinc, Review after 3 days"></textarea></div>
+<div class="row"><button class="btn" onclick="savePatient()" data-bn="💾 Save Patient" data-en="💾 Save Patient">💾 Save Patient</button><button class="btn" style="background:#64748b" onclick="clearPatientForm()" data-bn="Clear Form" data-en="Clear Form">Clear Form</button></div>
+<div style="margin-top:10px;display:flex;gap:6px"><input id="patSearch" placeholder="Search name / diagnosis..." oninput="renderPatients()" style="flex:1"><button class="btn2" style="background:#dc2626;color:#fff" onclick="clearAllPatients()" data-bn="🗑 Delete All" data-en="🗑 Delete All">🗑 Delete All</button><button class="btn2" style="background:#0f766e;color:#fff" onclick="exportPatients()" data-bn="📤 Export / Copy" data-en="📤 Export / Copy">📤 Export / Copy</button></div>
+<p class="small" id="patCount"></p>
+<div id="patList"></div>
+</div>
+
+<div id="burn" class="card sec" style="display:none"><h3 data-bn="Burn Management - % Burn & Fluid Loss" data-en="Burn Management - % Burn & Fluid Loss">Burn Management - % Burn & Fluid Loss</h3><div class="row"><div><label data-bn="Weight kg" data-en="Weight kg">Weight kg</label><input type="number" id="bWt" step="0.1"></div><div><label data-bn="% TBSA burned" data-en="% TBSA burned">% TBSA burned</label><input type="number" id="bTbsa" step="0.1"></div></div><button class="btn" onclick="calcBurn()" data-bn="Calculate Fluid" data-en="Calculate Fluid">Calculate Fluid</button><div id="burnRes" class="result" style="display:none"></div><button class="btn2 noPrint" style="background:#7c3aed;color:#fff;margin-top:6px" onclick="sendToPatient('Burn')" data-bn="➕ Send Result To Patient" data-en="➕ Send Result To Patient">➕ Send Result To Patient</button></div>
+<div id="dose" class="card sec" style="display:none"><h3 data-bn="ওজন অনুযায়ী ডোজ" data-en="Weight Based Dose">ওজন অনুযায়ী ডোজ</h3><label data-bn="ওজন (kg)" data-en="Weight (kg)">ওজন (kg)</label><input type="number" id="wt" step="0.1"><div class="row"><div><label data-bn="mg/kg/dose" data-en="mg/kg/dose">mg/kg/dose</label><input type="number" id="dosePerKg"></div><div><label data-bn="Frequency" data-en="Frequency">Frequency</label><select id="freq"><option value="1">OD</option><option value="2">BD</option><option value="3" selected>TDS</option><option value="4">QDS</option></select></div></div><div class="row"><div><label>mg in</label><input type="number" id="mg" value="120"></div><div><label>ml</label><input type="number" id="ml" value="5"></div></div><button class="btn" onclick="calcDose()" data-bn="Calculate" data-en="Calculate">Calculate</button><div id="doseRes" class="result" style="display:none"></div><button class="btn2" style="background:#7c3aed;color:#fff;margin-top:6px" onclick="sendToPatient('Dose')" data-bn="➕ Send Result To Patient" data-en="➕ Send Result To Patient">➕ Send Result To Patient</button></div>
+
+<!-- DRUGS -->
+<div id="drugs" class="card sec" style="display:none"><h3 data-bn="Common Drugs - System Wise" data-en="Common Drugs - System Wise">Common Drugs - System Wise</h3><p class="small" data-bn="Database is in separate file drugs.js. To add drug, edit only drugs.js + set system." data-en="Database is in separate file drugs.js. To add drug, edit only drugs.js + set system.">Database is in separate file <b>drugs.js</b>. To add drug, edit only drugs.js + set <b>system</b>.</p><input type="text" id="drugSearch" placeholder="Search by name / generic / indication... e.g. fever, worm, asthma" oninput="filterDrugs()"><div class="sysWrap"><span class="badge sysTab active" data-sys="" style="background:#0f766e" onclick="filterBySystem('')">All</span><span class="badge sysTab" data-sys="Fever/Pain" style="background:#dc2626" onclick="filterBySystem('Fever/Pain')">Fever/Pain</span><span class="badge sysTab" data-sys="Antibiotic" style="background:#2563eb" onclick="filterBySystem('Antibiotic')">Antibiotic</span><span class="badge sysTab" data-sys="Respiratory" style="background:#0891b2" onclick="filterBySystem('Respiratory')">Respiratory</span><span class="badge sysTab" data-sys="GIT" style="background:#d97706" onclick="filterBySystem('GIT')">GIT</span><span class="badge sysTab" data-sys="CNS" style="background:#7c3aed" onclick="filterBySystem('CNS')">CNS</span><span class="badge sysTab" data-sys="CVS" style="background:#be185d" onclick="filterBySystem('CVS')">CVS</span><span class="badge sysTab" data-sys="Allergy" style="background:#16a34a" onclick="filterBySystem('Allergy')">Allergy</span><span class="badge sysTab" data-sys="Nutrition" style="background:#65a30d" onclick="filterBySystem('Nutrition')">Nutrition</span><span class="badge sysTab" data-sys="Emergency" style="background:#991b1b" onclick="filterBySystem('Emergency')">Emergency</span><span class="badge sysTab" data-sys="Renal" style="background:#0e7490" onclick="filterBySystem('Renal')">Renal</span></div><div id="drugCount" class="small"></div><div id="drugList" style="margin-top:8px"></div></div>
+
+<div id="neonate" class="card sec" style="display:none">
+<h3 data-bn="নবজাতক - APGAR" data-en="Neonate - APGAR">নবজাতক - APGAR</h3>
+<table><tr><th>Sign</th><th>0</th><th>1</th><th>2</th><th>Score</th></tr>
+<tr><td>Heart Rate</td><td>Absent</td><td><100</td><td>>100</td><td><select id="a1"><option>0</option><option>1</option><option>2</option></select></td></tr>
+<tr><td>Resp</td><td>Absent</td><td>Weak cry</td><td>Good cry</td><td><select id="a2"><option>0</option><option>1</option><option>2</option></select></td></tr>
+<tr><td>Tone</td><td>Limp</td><td>Some flex</td><td>Active</td><td><select id="a3"><option>0</option><option>1</option><option>2</option></select></td></tr>
+<tr><td>Reflex</td><td>None</td><td>Grimace</td><td>Cry</td><td><select id="a4"><option>0</option><option>1</option><option>2</option></select></td></tr>
+<tr><td>Color</td><td>Blue</td><td>Pink/blue</td><td>All pink</td><td><select id="a5"><option>0</option><option>1</option><option>2</option></select></td></tr>
+</table>
+<button class="btn" onclick="calcApgar()" data-bn="APGAR Calculate" data-en="APGAR Calculate">APGAR Calculate</button><div id="apgarRes" class="result" style="display:none"></div>
+<button class="btn2" style="background:#7c3aed;color:#fff;margin-top:6px" onclick="sendToPatient('Apgar')">➕ Send Result To Patient</button>
+<h3 style="margin-top:16px;color:#7c3aed">📊 Ballard Score Chart</h3>
+<p class="small">Neuromuscular 6 + Physical 6 = Total. Weeks = Score x 0.4 + 24</p>
+<table><tr><th>Sign</th><th>Score</th></tr><tr><td>Posture + Square Window + Arm Recoil + Popliteal + Scarf + Heel to Ear (6)</td><td><select id="b1"><option>-1</option><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option></select> <select id="b2"><option>-1</option><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option></select> <select id="b3"><option>-1</option><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option></select> <select id="b4"><option>-1</option><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select> <select id="b5"><option>-1</option><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option></select> <select id="b6"><option>-1</option><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option></select></td></tr><tr><td>Skin + Lanugo + Plantar + Breast + Eye/Ear + Genitals (6)</td><td><select id="b7"><option>-1</option><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select> <select id="b8"><option>-1</option><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option></select> <select id="b9"><option>-1</option><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option></select> <select id="b10"><option>-1</option><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option></select> <select id="b11"><option>-1</option><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option></select> <select id="b12"><option>-1</option><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select></td></tr></table>
+<button class="btn" style="background:#7c3aed" onclick="calcBallardChart()" data-bn="Calculate Ballard Weeks" data-en="Calculate Ballard Weeks">Calculate Ballard Weeks</button><div id="ballardRes" class="result" style="display:none"></div>
+<button class="btn2" style="background:#7c3aed;color:#fff;margin-top:6px" onclick="sendToPatient('Ballard')">➕ Send Result To Patient</button>
+</div>
+<div id="growth" class="card sec" style="display:none">
+<h3 data-bn="📈 গ্রোথ পার্সেন্টাইল - WHO" data-en="📈 Growth Percentile - WHO">📈 গ্রোথ পার্সেন্টাইল - WHO</h3>
+<div class="row"><div><label>Sex</label><select id="gSex"><option value="boy">Boy</option><option value="girl">Girl</option></select></div><div><label data-bn="Age months 0-60" data-en="Age months 0-60">Age months 0-60</label><input type="number" id="gAge" placeholder="12"></div></div>
+<div class="row"><div><label data-bn="Weight kg" data-en="Weight kg">Weight kg</label><input type="number" id="gWt" step="0.1"></div><div><label data-bn="Height cm" data-en="Height cm">Height cm</label><input type="number" id="gHt" step="0.1"></div></div>
+<button class="btn" onclick="calcGrowth()" data-bn="Plot Graph" data-en="Plot Graph">Plot Graph</button>
+<div id="growthRes" class="result" style="display:none"></div>
+<canvas id="growthCanvas" width="700" height="400" style="margin-top:10px;border:1px solid #e2e8f0;border-radius:10px;background:#fff"></canvas>
+<button class="btn2" style="background:#7c3aed;color:#fff;margin-top:6px" onclick="sendToPatient('Growth')" data-bn="➕ Send Result To Patient" data-en="➕ Send Result To Patient">➕ Send Result To Patient</button>
+</div>
+<div id="expected" class="card sec" style="display:none">
+<h3 data-bn="📏 Expected vs Actual + % More/Less" data-en="📏 Expected vs Actual + % More/Less">📏 Expected vs Actual + % More/Less</h3>
+<div class="row"><div><label data-bn="Year" data-en="Year">Year</label><input type="number" id="exYear" placeholder="7"></div><div><label data-bn="Month" data-en="Month">Month</label><input type="number" id="exMonth" placeholder="0"></div></div>
+<div class="row" style="margin-top:8px"><div><label data-bn="Actual Weight kg" data-en="Actual Weight kg">Actual Weight kg</label><input type="number" id="exActWt" placeholder="23.1" step="0.1"></div><div><label data-bn="Actual Height cm" data-en="Actual Height cm">Actual Height cm</label><input type="number" id="exActHt" placeholder="119" step="0.1"></div></div>
+<button class="btn" onclick="calcExpected()" data-bn="Calculate % Difference" data-en="Calculate % Difference">Calculate % Difference</button>
+<div id="expectedRes" class="result" style="display:none"></div>
+<button class="btn2" style="background:#7c3aed;color:#fff;margin-top:6px" onclick="sendToPatient('Expected')">➕ Send Result To Patient</button>
+</div>
+<div id="bsa" class="card sec" style="display:none"><h3>BSA / BMI / Maintenance Fluids</h3>
+<div class="row"><div><label data-bn="Wt kg" data-en="Wt kg">Wt kg</label><input type="number" id="bsaWt" step="0.1"></div><div><label data-bn="Ht cm" data-en="Ht cm">Ht cm</label><input type="number" id="bsaHt" step="0.1"></div></div>
+<div class="row" style="margin-top:6px"><div><label data-bn="Age yr" data-en="Age yr">Age yr</label><input type="number" id="bsaAge" step="0.1"></div><div><label>Sex</label><select id="bsaSex"><option value="boy">Boy</option><option value="girl">Girl</option></select></div></div>
+<button class="btn" onclick="calcBSA()">BSA & BMI</button>
+<div id="bsaRes" class="result" style="display:none"></div>
+<button class="btn2" style="background:#7c3aed;color:#fff;margin-top:6px" onclick="sendToPatient('BSA')">➕ Send Result To Patient</button>
+<div style="margin-top:10px"><label data-bn="Weight kg for Fluids" data-en="Weight kg for Fluids">Weight kg for Fluids</label><input type="number" id="fWt" step="0.1"><button class="btn" onclick="calcFluid()" data-bn="Fluid 4-2-1 (Maintenance)" data-en="Fluid 4-2-1 (Maintenance)">Fluid 4-2-1 (Maintenance)</button></div>
+<div id="fluidRes" class="result" style="display:none"></div>
+<button class="btn2" style="background:#7c3aed;color:#fff;margin-top:6px" onclick="sendToPatient('Fluid')">➕ Send Result To Patient</button></div>
+<div id="emerg" class="card sec" style="display:none"><h3>Emergency</h3><div class="row"><div><label data-bn="Age yr" data-en="Age yr">Age yr</label><input type="number" id="eAge" placeholder="3"></div><div><label data-bn="Weight kg" data-en="Weight kg">Weight kg</label><input type="number" id="eWt" placeholder="14"></div></div><button class="btn" onclick="calcEmerg()" data-bn="Calculate" data-en="Calculate">Calculate</button><div id="emergRes" class="result" style="display:none"></div><button class="btn2" style="background:#7c3aed;color:#fff;margin-top:6px" onclick="sendToPatient('Emerg')">➕ Send Result To Patient</button></div>
+<div id="dehy" class="card sec" style="display:none"><h3>Dehydration</h3><div class="row"><div><label data-bn="Weight kg" data-en="Weight kg">Weight kg</label><input type="number" id="dWt" placeholder="10"></div><div><label data-bn="Dehydration %" data-en="Dehydration %">Dehydration %</label><select id="dPer"><option value="5">5% Some</option><option value="10" selected>10% Severe</option></select></div></div><button class="btn" onclick="calcDehy()" data-bn="Calculate" data-en="Calculate">Calculate</button><div id="dehyRes" class="result" style="display:none"></div><button class="btn2" style="background:#7c3aed;color:#fff;margin-top:6px" onclick="sendToPatient('Dehy')">➕ Send Result To Patient</button></div>
+<div class="card" style="text-align:center;background:#f0fdfa;border:1px solid #0f766e"><div style="font-weight:900;color:#0f766e">Dr. Sumaiya Mohammad</div><div style="font-size:11px">Physiologist, Bangladesh</div></div>
+</div>
+
+<script src="drugs.js"></script>
+<script>
+let currentLang='bn';
+function applyLang(){
+  document.querySelectorAll('[data-bn]').forEach(el=>{
+    let txt = currentLang==='bn' ? el.dataset.bn : el.dataset.en;
+    if(txt) el.textContent = txt;
+  });
+  document.getElementById('langBtn').textContent = currentLang==='bn' ? 'EN' : 'BN';
+  document.getElementById('headerSub').textContent = currentLang==='bn' ? 'Physiologist, Bangladesh • শিশু ডোজ মাস্টার' : 'Physiologist, Bangladesh • Paedi Dose Master';
+}
+function toggleLang(){ currentLang = currentLang==='bn' ? 'en' : 'bn'; applyLang(); }
+
+function suggestionBox(type, text){return `<div style="margin-top:8px;padding:8px;background:#fffbeb;border:1px dashed #f59e0b;border-radius:8px"><div style="font-size:11px;font-weight:800;color:#92400e">💡 Suggestion:</div><div style="font-size:12px;margin-top:4px" id="cmt_${type}">${text}</div><button onclick="navigator.clipboard.writeText(document.getElementById('cmt_${type}').innerText);this.innerText='Copied!'" style="margin-top:5px;padding:4px 8px;border-radius:6px;border:1px solid #fbbf24;background:#fff;font-size:10px">Copy</button></div>`;}
+document.getElementById('today').valueAsDate=new Date();
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');document.querySelectorAll('.sec').forEach(s=>s.style.display='none');document.getElementById(t.dataset.t).style.display='block';}));
+applyLang();
+
+let patients = JSON.parse(localStorage.getItem('paedi_patients')||'[]');
+let lastResult = '';
+function savePatient(){
+  let name=document.getElementById('pName').value.trim();
+  let wt=document.getElementById('pWt').value;
+  if(!name||!wt) return alert('Name + Weight must fill');
+  let p={id:Date.now(), date:new Date().toLocaleDateString('en-GB')+' '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}), name:name, age:document.getElementById('pAge').value, wt:wt, sex:document.getElementById('pSex').value, dx:document.getElementById('pDx').value, med:document.getElementById('pMed').value, note:document.getElementById('pNote').value || lastResult};
+  patients.unshift(p);
+  localStorage.setItem('paedi_patients', JSON.stringify(patients));
+  renderPatients();
+  alert('Patient Saved ✅ '+name);
+}
+function renderPatients(){
+  let q=(document.getElementById('patSearch').value||'').toLowerCase();
+  let list=patients.filter(p=> (p.name+' '+p.dx+' '+p.med).toLowerCase().includes(q));
+  document.getElementById('patCount').innerHTML='Total Patients: <b>'+patients.length+'</b> | Showing: '+list.length;
+  document.getElementById('patList').innerHTML=list.map(p=>`<div class="patCard"><b>${p.name}</b> • ${p.age} • ${p.sex} • ${p.wt}kg • <span style="font-size:10px;color:#64748b">${p.date}</span><br><b>Dx:</b> ${p.dx||'-'}<br><b>Medicine:</b> ${p.med||'-'}<br><b>Note:</b> ${p.note||'-'}<br><div style="margin-top:6px;display:flex;gap:6px"><button class="btn2" style="background:#0f766e;color:#fff" onclick="loadPatient(${p.id})">↩ Load</button><button class="btn2" style="background:#2563eb;color:#fff" onclick="printPatient(${p.id})">🖨 Print</button><button class="btn2" style="background:#dc2626;color:#fff" onclick="deletePatient(${p.id})">Delete</button></div></div>`).join('') || '<p class="small">No patient yet. Save first patient.</p>';
+}
+function loadPatient(id){ let p=patients.find(x=>x.id==id); if(!p) return; document.getElementById('pName').value=p.name; document.getElementById('pAge').value=p.age; document.getElementById('pWt').value=p.wt; document.getElementById('pSex').value=p.sex; document.getElementById('pDx').value=p.dx; document.getElementById('pMed').value=p.med; document.getElementById('pNote').value=p.note; window.scrollTo(0,0); }
+function deletePatient(id){ if(!confirm('Delete this patient?')) return; patients=patients.filter(x=>x.id!=id); localStorage.setItem('paedi_patients', JSON.stringify(patients)); renderPatients(); }
+function clearAllPatients(){ if(!confirm('Delete ALL patients?')) return; patients=[]; localStorage.removeItem('paedi_patients'); renderPatients(); }
+function clearPatientForm(){ ['pName','pAge','pWt','pDx','pMed','pNote'].forEach(id=>document.getElementById(id).value=''); }
+function exportPatients(){ let txt=patients.map(p=>`${p.date} | ${p.name} | ${p.age} | ${p.sex} | ${p.wt}kg | Dx: ${p.dx} | Med: ${p.med} | Note: ${p.note}`).join('\n'); navigator.clipboard.writeText(txt).then(()=>alert('Copied '+patients.length+' patients to clipboard ✅')); }
+function printPatient(id){ let p=patients.find(x=>x.id==id); let w=window.open('','','width=600'); w.document.write(`<h2>Paedi Dose Master - Prescription</h2><p>Dr. Sumaiya Mohammad, Physiologist, Bangladesh</p><hr><p><b>Name:</b> ${p.name} | <b>Age:</b> ${p.age} | <b>Sex:</b> ${p.sex} | <b>Weight:</b> ${p.wt}kg | <b>Date:</b> ${p.date}</p><p><b>Diagnosis:</b> ${p.dx}</p><p><b>Medicine:</b> ${p.med}</p><p><b>Advice:</b> ${p.note}</p><hr><p style="font-size:11px">This is a calculation aid, not a substitute for clinical judgement. Verify dose before prescribing.</p>`); w.document.close(); w.print(); }
+function sendToPatient(type){
+  let map={'Dose':'doseRes','Burn':'burnRes','Growth':'growthRes','Expected':'expectedRes','BSA':'bsaRes','Fluid':'fluidRes','Emerg':'emergRes','Dehy':'dehyRes','Apgar':'apgarRes','Ballard':'ballardRes','Age':'ageRes'};
+  let id=map[type];
+  let txt=id ? (document.getElementById(id).innerText||'') : '';
+  if(!txt){ alert('Age Calculate kore nao, tarpor Send koro'); return; }
+  lastResult=txt;
+  document.getElementById('pNote').value=txt;
+  document.querySelector('[data-t=patient]').click();
+  alert('Result sent to Patient form ✅ Now fill Name + Save');
+}
+function useAgeForPatient(){ let r=document.getElementById('ageRes').innerText; document.getElementById('pAge').value=r; document.querySelector('[data-t=patient]').click(); }
+renderPatients();
+
+function calcAge(){
+  let dob=new Date(document.getElementById('dob').value);let today=new Date(document.getElementById('today').value);
+  if(!dob||isNaN(dob))return alert('DOB');
+  let y=today.getFullYear()-dob.getFullYear();let m=today.getMonth()-dob.getMonth();let d=today.getDate()-dob.getDate();
+  if(d<0){m--;let pm=new Date(today.getFullYear(),today.getMonth(),0).getDate();d+=pm}if(m<0){y--;m+=12}
+  let totalDays=Math.floor((today-dob)/86400000);
+  if(y>19){alert('This software is for 0-19 years only');return;}
+  document.getElementById('ageRes').style.display='block';
+  if(currentLang==='bn'){
+    let cmt=totalDays<28?`Neonate ${totalDays} days - newborn care.`:`${y}y ${m}m - Compare with expected.`;
+    document.getElementById('ageRes').innerHTML=`বয়স: ${y} বছর, ${m} মাস, ${d} দিন (Total ${totalDays} দিন)`+suggestionBox('age',cmt);
+  } else {
+    let cmt=totalDays<28?`Neonate ${totalDays} days - newborn care.`:`${y}y ${m}m - Compare with expected.`;
+    document.getElementById('ageRes').innerHTML=`Age: ${y} years, ${m} months, ${d} days (Total ${totalDays} days)`+suggestionBox('age',cmt);
+  }
+}
+function calcDose(){
+  let wt=parseFloat(document.getElementById('wt').value);let d=parseFloat(document.getElementById('dosePerKg').value);let mg=parseFloat(document.getElementById('mg').value);let ml=parseFloat(document.getElementById('ml').value);let freq=parseInt(document.getElementById('freq').value);
+  if(!wt||!d)return alert('wt');
+  let per=wt*d;let mlPer=per*ml/mg;
+  let cmt=`For ${wt}kg, dose is ${per.toFixed(1)}mg = ${mlPer.toFixed(1)}ml per dose, ${freq}x daily.`;
+  document.getElementById('doseRes').style.display='block';
+  if(currentLang==='bn') document.getElementById('doseRes').innerHTML=`একবারে: <b>${per.toFixed(1)} mg = ${mlPer.toFixed(1)} ml</b><br>দিনে: ${(per*freq).toFixed(1)} mg`+suggestionBox('dose',cmt);
+  else document.getElementById('doseRes').innerHTML=`Per dose: <b>${per.toFixed(1)} mg = ${mlPer.toFixed(1)} ml</b><br>Per day: ${(per*freq).toFixed(1)} mg`+suggestionBox('dose',cmt);
+}
+function calcBurn(){let w=parseFloat(document.getElementById('bWt').value);let t=parseFloat(document.getElementById('bTbsa').value);if(!w||!t)return alert('Weight & % burn');let fluid=4*w*t;let firstHalf=fluid/2;let secondHalf=fluid/2;let cmt=t>=20?'Major burn - Parkland formula, give 1/2 in first 8h and 1/2 in next 16h. Monitor urine output.' : 'Minor burn - oral fluids & local care; Parkland estimate above.';document.getElementById('burnRes').style.display='block';document.getElementById('burnRes').innerHTML=`<b>Formula:</b> Parkland = 4 ml x kg x %TBSA<br>Total 24h fluid: <b>${fluid} ml</b><br>First 8h: ${firstHalf} ml | Next 16h: ${secondHalf} ml`+suggestionBox('burn',cmt);}
+
+let currentSystem='';
+function filterBySystem(sys){
+  currentSystem=sys;
+  document.querySelectorAll('.sysTab').forEach(b=>{ b.classList.toggle('active', b.dataset.sys===sys); });
+  renderDrugs(document.getElementById('drugSearch').value||'');
+}
+function getSystem(d){
+  if(d.system) return d.system;
+  let t=(d.name+' '+d.generic+' '+d.indication).toLowerCase();
+  if(t.includes('paracetamol')||t.includes('ibuprofen')) return 'Fever/Pain';
+  if(t.includes('salbutamol')||t.includes('asthma')) return 'Respiratory';
+  if(t.includes('worm')||t.includes('diarrhoea')||t.includes('ors')||t.includes('zinc')||t.includes('vomit')) return 'GIT';
+  if(t.includes('seizure')||t.includes('phenytoin')||t.includes('phenobar')) return 'CNS';
+  if(t.includes('digoxin')||t.includes('furosemide')) return 'CVS';
+  if(t.includes('allergy')||t.includes('cetirizine')) return 'Allergy';
+  if(t.includes('iron')||t.includes('vitamin')||t.includes('calcium')) return 'Nutrition';
+  if(t.includes('adrenaline')) return 'Emergency';
+  return 'Antibiotic';
+}
+function renderDrugs(f=''){
+  if(typeof DRUGS==='undefined'){ document.getElementById('drugList').innerHTML='<p style="color:red">drugs.js not found! Keep drugs.js in same folder as index.html</p>'; return; }
+  let c=document.getElementById('drugList');c.innerHTML='';
+  let filtered=DRUGS.filter(d=>{
+    let sys=getSystem(d);
+    if(currentSystem && sys!==currentSystem) return false;
+    return (d.name+' '+d.generic+' '+d.indication+' '+d.dose+' '+sys).toLowerCase().includes(f.toLowerCase());
+  });
+  document.getElementById('drugCount').innerHTML='Showing: <b>'+filtered.length+'</b> / Total: <b>'+DRUGS.length+'</b>' + (currentSystem? ' | System: <b>'+currentSystem+'</b>':'');
+  filtered.forEach(d=>{
+    let div=document.createElement('div');div.className='drugCard';
+    let safeName=d.name.replace(/'/g,"\\'");
+    let safeDose=d.dose.replace(/'/g,"\\'");
+    div.innerHTML=`<span style="font-size:10px;background:#0f766e;color:#fff;padding:2px 7px;border-radius:10px">${getSystem(d)}</span> <b>${d.name}</b> <span style="font-size:10px;color:#64748b">(${d.generic})</span><br><b>Dose:</b> ${d.dose}<br><b>Indication:</b> ${d.indication}<br><b>Contraindication:</b> ${d.contraindication}<br><b>Pregnancy:</b> ${d.pregnancy} | <b>Interaction:</b> ${d.interaction}<br><b>Brands BD:</b> ${d.brands}<br><i style="font-size:11px;color:#92400e">💡 ${d.note}</i><br><button class="btn2" style="background:#0f766e;color:#fff;margin-top:6px" onclick="useDrug('${safeName}', '${safeDose}')">➕ Use This Dose → Dose Calculator</button> <button class="btn2" style="background:#7c3aed;color:#fff" onclick="sendDrugToPatient('${safeName}')">➕ Send To Patient</button>`;
+    c.appendChild(div);
+  });
+  if(c.innerHTML=='') c.innerHTML='<p class="small">No drug found. Try fever / worm / asthma</p>';
+}
+function filterDrugs(){renderDrugs(document.getElementById('drugSearch').value);}
+function filterDrugsByCat(cat){ filterBySystem(cat); }
+function useDrug(name, dose){
+  document.querySelector('[data-t=dose]').click();
+  let m=dose.match(/([0-9.]+)\s*mg\/kg/);
+  if(m) document.getElementById('dosePerKg').value=m[1];
+  document.getElementById('pMed').value=name+' - '+dose;
+  alert('Dose set: '+name);
+}
+function sendDrugToPatient(name){
+  document.getElementById('pMed').value=name;
+  document.querySelector('[data-t=patient]').click();
+}
+renderDrugs();
+
+function calcBSA(){let w=parseFloat(document.getElementById('bsaWt').value);let h=parseFloat(document.getElementById('bsaHt').value);if(!w||!h)return;let bsa=Math.sqrt(h*w/3600);let bmi=w/((h/100)*(h/100));let cat=bmi<18.5?'Underweight':bmi<25?'Normal':bmi<30?'Overweight':'Obese';document.getElementById('bsaRes').style.display='block';document.getElementById('bsaRes').innerHTML=`<b>BSA:</b> ${bsa.toFixed(2)} m²<br><b>BMI:</b> ${bmi.toFixed(1)} → <b>${cat}</b>`+suggestionBox('bsa',`BSA=${bsa.toFixed(2)} | BMI=${bmi.toFixed(1)} (${cat})`);}
+function calcFluid(){let w=parseFloat(document.getElementById('fWt').value);if(!w)return;let ml=w<=10?w*100:w<=20?1000+(w-10)*50:1500+(w-20)*20;let perHour=(ml/24).toFixed(1);document.getElementById('fluidRes').style.display='block';document.getElementById('fluidRes').innerHTML=`<b>Maintenance Fluid:</b> ${ml} ml / 24 hr<br>Hourly: <b>${perHour} ml/hr</b>`+suggestionBox('fluid',`Fluid ${ml} ml/day`);}
+function calcEmerg(){let age=parseFloat(document.getElementById('eAge').value)||0;let w=parseFloat(document.getElementById('eWt').value)||10;let uncuffed=age<1?3.5:(age/4+4);let cuffed=age<1?3.0:(age/4+3.5);let adrenaline=w*0.01;let bolus=w*20;let shock=w*4;document.getElementById('emergRes').style.display='block';document.getElementById('emergRes').innerHTML=`Uncuffed ${uncuffed.toFixed(1)}mm Cuffed ${cuffed.toFixed(1)}mm<br>Bolus ${bolus}ml Adrenaline ${adrenaline.toFixed(2)}mg Shock ${shock}J`+suggestionBox('emerg',`Emergency prep for ${w}kg`);}
+function calcApgar(){let s=0;for(let i=1;i<=5;i++)s+=parseInt(document.getElementById('a'+i).value);let txt=s>=7?'Normal':s>=4?'Needs support':'Resuscitate';document.getElementById('apgarRes').style.display='block';document.getElementById('apgarRes').innerHTML=`APGAR ${s}/10 ${txt}`+suggestionBox('apgar',`APGAR ${s}/10 ${txt}`);}
+function calcBallardChart(){let total=0;for(let i=1;i<=12;i++){total+=parseInt(document.getElementById('b'+i).value);}let weeks=total*0.4+24;let cat=weeks<28?'Extremely Preterm':weeks<32?'Very Preterm':weeks<37?'Preterm':weeks<=40?'Term':'Post-term';document.getElementById('ballardRes').style.display='block';document.getElementById('ballardRes').innerHTML=`<b>Total: ${total}</b> ~<b>${weeks.toFixed(1)} weeks</b> - ${cat}`+suggestionBox('ballard',`Total ${total} = ${weeks.toFixed(1)} weeks (${cat})`);}
+function calcGrowth(){
+ let age=parseInt(document.getElementById('gAge').value); let wt=parseFloat(document.getElementById('gWt').value);
+ if(isNaN(age)||age<0||age>60) return alert('Age 0-60 month dao');
+ const who50Boy=[3.3,4.5,5.6,6.4,7.0,7.5,7.9,8.3,8.6,8.9,9.2,9.4,9.6,9.9,10.2,10.5,10.8,11.0,11.1,11.3,11.5,11.7,11.9,12.0,12.2,12.4,12.6,12.8,13.0,13.1,13.3,13.4,13.6,13.7,13.9,14.0,14.2,14.3,14.5,14.6,14.8,14.9,15.0,15.2,15.3,15.5,15.6,15.8,15.9,16.0,16.1,16.2,16.3,16.5,16.6,16.7,16.8,17.0,17.1,17.2,17.3];
+ const who50Girl=[3.2,4.2,5.1,5.8,6.4,6.9,7.3,7.6,7.9,8.2,8.4,8.6,8.9,9.1,9.4,9.6,9.8,10.0,10.2,10.4,10.5,10.7,10.9,11.0,11.2,11.4,11.6,11.8,12.0,12.1,12.3,12.5,12.6,12.8,12.9,13.1,13.2,13.4,13.5,13.7,13.8,13.9,14.1,14.2,14.3,14.5,14.6,14.7,14.9,15.0,15.1,15.2,15.4,15.5,15.6,15.8,15.9,16.0,16.1];
+ const who50=document.getElementById('gSex').value==='boy'?who50Boy:who50Girl;
+ const who3=who50.map(v=>v*0.85); const who97=who50.map(v=>v*1.15);
+ let canvas=document.getElementById('growthCanvas'); let ctx=canvas.getContext('2d'); ctx.clearRect(0,0,700,400);
+ ctx.strokeStyle='#e2e8f0'; for(let i=0;i<=10;i++){ctx.beginPath();ctx.moveTo(50,i*30+20);ctx.lineTo(650,i*30+20);ctx.stroke();}
+ ctx.strokeStyle='#16a34a'; ctx.setLineDash([4,4]); ctx.beginPath(); for(let i=0;i<who3.length;i++){let x=50+(i/60)*600;let y=320-who3[i]*8; if(i==0)ctx.moveTo(x,y); else ctx.lineTo(x,y);} ctx.stroke();
+ ctx.beginPath(); for(let i=0;i<who97.length;i++){let x=50+(i/60)*600;let y=320-who97[i]*8; if(i==0)ctx.moveTo(x,y); else ctx.lineTo(x,y);} ctx.stroke(); ctx.setLineDash([]);
+ ctx.strokeStyle='#0f766e'; ctx.lineWidth=2.5; ctx.beginPath(); for(let i=0;i<who50.length;i++){let x=50+(i/60)*600;let y=320-who50[i]*8; if(i==0)ctx.moveTo(x,y); else ctx.lineTo(x,y);} ctx.stroke();
+ if(wt){ let px=50+(age/60)*600; let py=320-wt*8; ctx.fillStyle='red'; ctx.beginPath(); ctx.arc(px,py,7,0,6.28); ctx.fill(); }
+ let perc='-';
+ if(wt){ let exp=who50[age]; let pct=((wt-exp)/exp*100).toFixed(1); perc=wt<who3[age]?`<span style="color:red"><3rd / Underweight (${pct}%)</span>`:wt>who97[age]?`>97th / Overweight (${pct}%)`:`Normal (${pct}%)`; }
+ document.getElementById('growthRes').style.display='block'; document.getElementById('growthRes').innerHTML=`Weight: ${perc}`+suggestionBox('growth',`Growth ${perc}`);
+}
+function calcDehy(){let w=parseFloat(document.getElementById('dWt').value);if(!w)return alert('Weight');let per=parseFloat(document.getElementById('dPer').value);let deficit=per*w*10;let planB=75*w;let planC=100*w;document.getElementById('dehyRes').style.display='block';document.getElementById('dehyRes').innerHTML=`Deficit ${deficit}ml<br>Plan B ${planB}ml ORS/4hr<br>Plan C ${planC}ml IV`+suggestionBox('dehy',`Dehydration ${per}% deficit ${deficit}ml`);}
+function calcExpected(){
+ let y=parseInt(document.getElementById('exYear').value)||0; let mo=parseInt(document.getElementById('exMonth').value)||0; let total=y*12+mo;
+ let expWt=total<=1?3.2:total<=6?3.2+(total-1)*0.6:total<=12?6.4+(total-6)*0.5:total<=24?9.5+(total-12)*0.25:y*2+8;
+ let expHt=total<=12?50+total*2.08:y*6+77;
+ let actWt=parseFloat(document.getElementById('exActWt').value); let actHt=parseFloat(document.getElementById('exActHt').value);
+ let html=`<b>Expected:</b> Wt ${expWt.toFixed(1)}kg, Ht ${expHt.toFixed(1)}cm<br>`;
+ if(actWt){ let pctW=((actWt-expWt)/expWt*100).toFixed(1); html+=`<div>Actual Wt: ${actWt}kg => ${pctW}%</div>`; }
+ if(actHt){ let pctH=((actHt-expHt)/expHt*100).toFixed(1); html+=`<div>Actual Ht: ${actHt}cm => ${pctH}%</div>`; }
+ document.getElementById('expectedRes').style.display='block'; document.getElementById('expectedRes').innerHTML=html+suggestionBox('expected',`Expected Wt ${expWt.toFixed(1)}kg, Ht ${expHt.toFixed(1)}cm`);
+}
+</script>
+<script>
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+</script>
+</body>
+</html>
